@@ -1,0 +1,25 @@
+.tile {
+
+  width: 100px;
+  height: 100px;
+  border:1px solid black;
+  display: inline-block;
+  vertical-align:top;
+  text-align:center;
+  font-size: 32px;
+  margin: 0px 0px;
+}
+
+.board {
+  width: 400px;
+  height: 400px;
+}
+
+.alien {
+  margin-top: 25px;
+  margin-left: 25px;
+  width: 50px;
+  height: 50px;
+  background-image: url('http://vignette2.wikia.nocookie.net/deadliestfiction/images/7/7d/XCOM_Sectoid.jpg/revision/latest?cb=20130418235005');
+  background-position: -100px -100px;
+}
