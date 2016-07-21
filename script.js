@@ -30,6 +30,10 @@ var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
 var boardBuilder = function(){
   var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienone")
   var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alientwo")
+  var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienthree")
+  var xone = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
+  var xtwo = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
+  var xthree = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   console.log(ayyone['health'])
   console.log(ayytwo)
   $('#11').append('<div class = alien id = '+ayyone.id+'>')
@@ -37,10 +41,41 @@ var boardBuilder = function(){
 }
 boardBuilder();
 
-
 var alienSelector = $(".alien").on('click',function(){
   alienSelector = $(this).attr('id')
   console.log(alienSelector)
+})
+
+var attacker = function(){
+
+}
+
+//range checker, to be called when attack is clicked
+var rangeChecker = function(location){
+  var above = $('#'+(location - 1)+"> .alien");
+  if (above.length > 0){
+      above.on('click', attacker)
+  }
+  //add attack listeners
+  var below = $('#'+(location + 1)+"> .alien");
+  var right = $('#'+(location + 10)+"> .alien");
+  var left = $('#'+(location - 10)+"> .alien")
+  var presence = above.length+below.length+left.length+right.length;
+}
+//hit calculator
+
+//damage dealer
+
+
+
+
+$('#attack').on('click', function(){
+  var $location = $('#'+alienSelector).parent();
+  var $idNum = Number($location.attr('id'))
+  var targets = rangeChecker($idNum);
+  if (targets < 0){
+    alert('no targets in range')
+  }
 })
 
 $('#right').on('click',function(){
