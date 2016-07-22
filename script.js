@@ -11,12 +11,15 @@ var Unit = function(d, h, s, a, r, id) {
     this.range=r;
     this.id = id;
     this.attack = function(victim){
-      if(this.range > Math.floor((Math.random()*100))){
+      var toHit = Math.random()*100;
+      console.log(toHit);
+      if(this.aim > Math.floor((Math.random()*100))){
         victim.health-=3;
       }
       else{
         alert("Missed!")
       }
+
     }
   }
 }
@@ -37,8 +40,6 @@ var boardBuilder = function(){
   var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienthree")
   var xtwo = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   var xthree = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
-  console.log(ayyone['health'])
-  console.log(ayytwo)
   $('#11').append('<div class = alien id = '+ayyone.id+'>')
   $('#21').append('<div class = alien id = '+ayytwo.id+'>')
 }
@@ -57,37 +58,37 @@ var jsConvert = function (id){
   }
 }
 
+var attacking = false;
+
 //keeps track of turn, in string form for easier use with dom and js IDs.
 var turnTrack = "alien";
 var enemy = "human";
 
-var alienSelector = $(".alien").on('click',function(){
+var unitSelector = $(".alien").on('click',function(){
   var sideCheck = $(this).attr('id');
   if (sideCheck.split("_")[0]===turnTrack){
-    alienSelector = sideCheck;
+    unitSelector = sideCheck;
   }
   else {
     alert("You can't command the enemy.")
   }
-  console.log(alienSelector)
 })
 
-var attacking = false;
+
 
 $('#attack').on('click', function(){
   if (attacking === false){
     attacking = true;
-    var $location = $('#'+alienSelector).parent();
+    var $location = $('#'+unitSelector).parent();
     var $idNum = Number($location.attr('id'))
-    var attacker = jsConvert(alienSelector);
-    var range = jsConvert(alienSelector)
+    var attacker = jsConvert(unitSelector);
+    var range = jsConvert(unitSelector)
     $('.tile').on('click',function(event){
       var $clickTarget = $(event.target);
       if ($clickTarget.hasClass(turnTrack)){
         var $targId = $clickTarget.attr('id')
         var target = jsConvert($targId)
         attacker.attack(target)
-        //run attacker method here.
       }
       else {
         alert('Invalid target')
@@ -110,48 +111,48 @@ $('#attack').on('click', function(){
 })
 
 $('#right').on('click',function(){
-  var $currentLocation = $('#'+alienSelector).parent();
+  var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) + 10;
   console.log($newLocation)
   if($('#'+$newLocation+" > .alien").length!=0){
 
       }
   else{
-  $('#'+alienSelector).appendTo("#"+$newLocation)
+  $('#'+unitSelector).appendTo("#"+$newLocation)
 }
 })
 
 $('#left').on('click',function(){
-  var $currentLocation = $('#'+alienSelector).parent();
+  var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) - 10;
   console.log($newLocation)
   if($('#'+$newLocation+" > .alien").length!=0){
       }
   else{
-  $('#'+alienSelector).appendTo("#"+$newLocation)
+  $('#'+unitSelector).appendTo("#"+$newLocation)
 }
 })
 
 $('#up').on('click',function(){
-  var $currentLocation = $('#'+alienSelector).parent();
+  var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) - 1;
   console.log($newLocation)
   if($('#'+$newLocation+" > .alien").length!=0){
       }
   else{
-  $('#'+alienSelector).appendTo("#"+$newLocation)
+  $('#'+unitSelector).appendTo("#"+$newLocation)
 }
 })
 
 $('#down').on('click',function(){
-  var $currentLocation = $('#'+alienSelector).parent();
+  var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) + 1;
   console.log($newLocation)
   if($('#'+$newLocation+" > .alien").length!=0){
     console.log('asdf')
       }
   else{
-  $('#'+alienSelector).appendTo("#"+$newLocation)
+  $('#'+unitSelector).appendTo("#"+$newLocation)
 }
 })
 
