@@ -2,7 +2,7 @@
 $(function(){
 
 //basic unit constructor. Arguments supplied by subconstructors
-var Unit = function(d, h, s, a, r, id) {
+var Unit = function(d, h, s, a, r, m, id) {
   {
     this.side=d;
     this.health=h;
@@ -10,15 +10,19 @@ var Unit = function(d, h, s, a, r, id) {
     this.aim=a;
     this.range=r;
     this.id = id;
+    this.actions = m;
     this.attack = function(victim){
       var toHit = Math.random()*100;
-      console.log(toHit);
       if(this.aim > Math.floor((Math.random()*100))){
         victim.health-=3;
         console.log(victim)
+        $('.tile').off('click',targetClick);
+        jsConvert(unitSelector).actions=0;
       }
       else{
         alert("Missed!")
+        $('.tile').off('click',targetClick);
+        jsConvert(unitSelector).actions=0;
       }
 
     }
@@ -33,28 +37,21 @@ var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
 
 //creates initial board state.
 
-  var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, "alien_1")
-  var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, "alien_2")
-  var xone = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "human_1")
+  var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_1")
+  var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_2")
+  var xone = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_1")
   var units = [[ayyone, ayytwo],[xone]]
 var boardBuilder = function(){
   var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienthree")
   var xtwo = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   var xthree = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
-  $('#11').append('<div class = alien id = '+ayyone.id+'>')
-  $('#21').append('<div class = alien id = '+ayytwo.id+'>')
-  $('#31').append('<div class = alien id = '+xone.id+'>')
+  $('#11').append("<div class = 'unit alien' id = "+ayyone.id+'>')
+  $('#21').append("<div class = 'unit alien' id = "+ayytwo.id+'>')
+  $('#31').append("<div class = 'unit human' id = "+xone.id+'>')
 }
 boardBuilder();
 
-// var test1 = $('#alien_1').parent().attr('id');
-// var test2 = test1.split("")
-// var test3 = Number(test2[0])+Number(test2[1])
-// console.log(test3)
-// var test4 = $('#alien_2').parent().attr('id');
-// var test5 = test4.split("")
-// var test6 = Number(test5[0])+Number(test5[1])
-// console.log(test6)
+
 
 //dom -> js converter, returns unit object
 var jsConvert = function (id){
@@ -75,8 +72,11 @@ var attacking = false;
 var turnTrack = "alien";
 var enemy = "human";
 
-var unitSelector = $(".alien").on('click',function(){
+
+//selects units if it's your turn.
+var unitSelector = $(".unit").on('click',function(){
   var sideCheck = $(this).attr('id');
+  //prevents selecting own units while attacking.
   if (attacking ===false){
     if (sideCheck.split("_")[0]===turnTrack){
       unitSelector = sideCheck;
@@ -98,19 +98,12 @@ var rangeFinder = function(shooter, victim){
   return Math.abs(firstLoc - secondLoc);
 }
 
-
-$('#attack').on('click', function(){
-  console.log(unitSelector)
-  if (attacking === false){
-    attacking = true;
-    var attacker = jsConvert(unitSelector);
-    var range = attacker.range
-    $('.tile').on('click',function(event){
+//handles logic for attacking clicks.
+var targetClick = function(event){
       var $clickTarget = $(event.target);
-      if ($clickTarget.hasClass(turnTrack)){
+      var attacker = jsConvert(unitSelector);
+      if ($clickTarget.hasClass(enemy)===true){
         var rangeCheck = rangeFinder(unitSelector, $clickTarget)
-        console.log(range)
-        console.log(rangeCheck)
         if(range >= rangeCheck){
           var $targId = $clickTarget.attr('id')
           var target = jsConvert($targId)
@@ -123,20 +116,24 @@ $('#attack').on('click', function(){
       else {
         alert('Invalid target')
       }
-      // var sideCheck = $(this).attr('id');
-      // var location
-      // if(sideCheck.split('_')[0]===attacker.side){
-      //   alert('Friendly Fire!');
-      // }
-      // else if ($('#'+this+" > .alien").length===0){
+}
 
-      // }
-    })
+$('#attack').on('click', function(){
+  if(jsConvert(unitSelector).actions>0){
+    if (attacking === false){
+      attacking = true;
+      $('.tile').on('click',targetClick)
+    }
+
+    else {
+      attacking = false;
+      $('.tile').off('click',targetClick);
+      // to remove the event listeners if the attack is canceled
+      // $('.tile').removeEventListener(name)
+    }
   }
-  else {
-    attacking = false;
-    // to remove the event listeners if the attack is canceled
-    // $('.tile').removeEventListener(name)
+  else{
+    alert('Out of actions')
   }
 })
 
@@ -144,46 +141,63 @@ $('#right').on('click',function(){
   var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) + 10;
   console.log($newLocation)
-  if($('#'+$newLocation+" > .alien").length!=0){
+  if($('#'+$newLocation+" > .unit").length!=0){
 
-      }
+    }
+  else if(jsConvert(unitSelector).actions>0){
+    $('#'+unitSelector).appendTo("#"+$newLocation)
+    jsConvert(unitSelector).actions-=1;
+    }
   else{
-  $('#'+unitSelector).appendTo("#"+$newLocation)
-}
+    alert('Out of Moves')
+  }
+
 })
 
 $('#left').on('click',function(){
   var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) - 10;
   console.log($newLocation)
-  if($('#'+$newLocation+" > .alien").length!=0){
+  if($('#'+$newLocation+" > .unit").length!=0){
       }
+  else if(jsConvert(unitSelector).actions>0){
+    $('#'+unitSelector).appendTo("#"+$newLocation)
+    jsConvert(unitSelector).actions-=1;
+    }
   else{
-  $('#'+unitSelector).appendTo("#"+$newLocation)
-}
+    alert('Out of Moves')
+  }
 })
 
 $('#up').on('click',function(){
   var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) - 1;
   console.log($newLocation)
-  if($('#'+$newLocation+" > .alien").length!=0){
+  if($('#'+$newLocation+" > .unit").length!=0){
       }
+  else if(jsConvert(unitSelector).actions>0){
+    $('#'+unitSelector).appendTo("#"+$newLocation)
+    jsConvert(unitSelector).actions-=1;
+    }
   else{
-  $('#'+unitSelector).appendTo("#"+$newLocation)
-}
+    alert('Out of Moves')
+  }
 })
 
 $('#down').on('click',function(){
   var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) + 1;
   console.log($newLocation)
-  if($('#'+$newLocation+" > .alien").length!=0){
+  if($('#'+$newLocation+" > .unit").length!=0){
     console.log('asdf')
       }
+  else if(jsConvert(unitSelector).actions>0){
+    $('#'+unitSelector).appendTo("#"+$newLocation)
+    jsConvert(unitSelector).actions-=1;
+    }
   else{
-  $('#'+unitSelector).appendTo("#"+$newLocation)
-}
+    alert('Out of Moves')
+  }
 })
 
 })

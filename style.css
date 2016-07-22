@@ -24,7 +24,10 @@
   background-position: -100px -100px;
 }
 
-#human_1 {
-  background-image: url('#');
+.human {
+  margin-top: 25px;
+  margin-left: 25px;
+  width: 50px;
+  height: 50px;
   background-color: black;
 }
