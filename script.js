@@ -9,8 +9,8 @@ var Unit = function(d, h, s, a, r, m, id) {
     this.speed=s;
     this.aim=a;
     this.range=r;
-    this.id = id;
     this.actions = m;
+    this.id = id;
     this.attack = function(victim){
       var toHit = Math.random()*100;
       console.log(toHit)
@@ -79,9 +79,19 @@ var unitIndex = {"alien": 0, "human": 1}
 
 //sends selected unit info to the dom
 var selectDomInfo = function (selection){
+  if (selection === undefined){
+    $('#health').text('Health: ');
+    $('#speed').text('Speed: ');
+    $('#range').text('Range: ');
+    $('#actions').text('Actions: ');
+  }
+  else{
   var source = jsConvert(selection);
-  $('#health').text('Health: '+this.health);
-
+    $('#health').text('Health: '+source.health);
+    $('#speed').text('Speed: '+source.speed);
+    $('#range').text('Range: '+source.range);
+    $('#actions').text('Actions: '+source.actions);
+  }
 }
 
 //sends updates to the dom for health and abilities
@@ -173,12 +183,14 @@ $('#right').on('click',function(){
   var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) + 10;
   console.log($newLocation)
+  //checks for units in the destination tile
   if($('#'+$newLocation+" > .unit").length!=0){
 
     }
   else if(jsConvert(unitSelector).actions>0){
     $('#'+unitSelector).appendTo("#"+$newLocation)
     jsConvert(unitSelector).actions-=1;
+    selectDomInfo(unitSelector)
     }
   else{
     alert('Out of Moves')
@@ -195,6 +207,7 @@ $('#left').on('click',function(){
   else if(jsConvert(unitSelector).actions>0){
     $('#'+unitSelector).appendTo("#"+$newLocation)
     jsConvert(unitSelector).actions-=1;
+    selectDomInfo(unitSelector)
     }
   else{
     alert('Out of Moves')
@@ -210,6 +223,7 @@ $('#up').on('click',function(){
   else if(jsConvert(unitSelector).actions>0){
     $('#'+unitSelector).appendTo("#"+$newLocation)
     jsConvert(unitSelector).actions-=1;
+    selectDomInfo(unitSelector)
     }
   else{
     alert('Out of Moves')
@@ -226,6 +240,7 @@ $('#down').on('click',function(){
   else if(jsConvert(unitSelector).actions>0){
     $('#'+unitSelector).appendTo("#"+$newLocation)
     jsConvert(unitSelector).actions-=1;
+    selectDomInfo(unitSelector)
     }
   else{
     alert('Out of Moves')
@@ -237,6 +252,8 @@ $('#down').on('click',function(){
 $('#turn').on('click',function(){
   unitSelector = null;
   attacking = false;
+  var resetter = {}
+  selectDomInfo()
   if(turnTrack==='alien'){
     turnTrack = 'human';
     for (var i = 0; i < units[1].length; i++){
