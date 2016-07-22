@@ -10,14 +10,17 @@ var Unit = function(d, h, s, a, r, id) {
     this.aim=a;
     this.range=r;
     this.id = id;
-
+    this.attack = function(victim){
+      if(this.range > Math.floor((Math.random()*100))){
+        victim.health-=3;
+      }
+      else{
+        alert("Missed!")
+      }
+    }
   }
 }
 
-var domToScript = function (element){
-    var jID = (element.split('_')[1])-1
-    return units[jID]
-}
 //to make adjusting stats easier.
 var accChart = {rookie: 65, squaddie: 70, sergeant: 75}
 var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
@@ -28,10 +31,10 @@ var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
 
   var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alien_1")
   var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alien_2")
-  var units = [ayyone, ayytwo]
+  var xone = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "human_1")
+  var units = [[ayyone, ayytwo],[xone]]
 var boardBuilder = function(){
   var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienthree")
-  var xone = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   var xtwo = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   var xthree = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   console.log(ayyone['health'])
@@ -43,16 +46,23 @@ boardBuilder();
 
 //dom -> js converter, returns unit object
 var jsConvert = function (id){
-  var index = Number(id.split("_")[1])-1;
-  return units[index];
+  var split = id.split("_");
+  var index = Number(split[1])-1;
 
+  if (split[0]==="alien"){
+    return units[0][index];
+  }
+  else{
+    return units[1][index];
+  }
 }
 
 //keeps track of turn, in string form for easier use with dom and js IDs.
 var turnTrack = "alien";
+var enemy = "human";
 
 var alienSelector = $(".alien").on('click',function(){
-  var sideCheck = $(this).attr('id')
+  var sideCheck = $(this).attr('id');
   if (sideCheck.split("_")[0]===turnTrack){
     alienSelector = sideCheck;
   }
@@ -62,13 +72,41 @@ var alienSelector = $(".alien").on('click',function(){
   console.log(alienSelector)
 })
 
-
-
+var attacking = false;
 
 $('#attack').on('click', function(){
-  var $location = $('#'+alienSelector).parent();
-  var $idNum = Number($location.attr('id'))
-  var range = jsConvert(alienSelector).range;
+  if (attacking === false){
+    attacking = true;
+    var $location = $('#'+alienSelector).parent();
+    var $idNum = Number($location.attr('id'))
+    var attacker = jsConvert(alienSelector);
+    var range = jsConvert(alienSelector)
+    $('.tile').on('click',function(event){
+      var $clickTarget = $(event.target);
+      if ($clickTarget.hasClass(turnTrack)){
+        var $targId = $clickTarget.attr('id')
+        var target = jsConvert($targId)
+        attacker.attack(target)
+        //run attacker method here.
+      }
+      else {
+        alert('Invalid target')
+      }
+      // var sideCheck = $(this).attr('id');
+      // var location
+      // if(sideCheck.split('_')[0]===attacker.side){
+      //   alert('Friendly Fire!');
+      // }
+      // else if ($('#'+this+" > .alien").length===0){
+
+      // }
+    })
+  }
+  else {
+    attacking = false;
+    // to remove the event listeners if the attack is canceled
+    // $('.tile').removeEventListener(name)
+  }
 })
 
 $('#right').on('click',function(){
