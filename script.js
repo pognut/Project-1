@@ -10,12 +10,7 @@ var Unit = function(d, h, s, a, r, id) {
     this.aim=a;
     this.range=r;
     this.id = id;
-    this.attacker = function(target){
-      var domID = $(target).attr('id');
-      var scriptID = Number((domID.split('_'))[1])-1;
-      units[scriptID]['health']-=3;
-      console.log(units[scriptID])
-    }
+
   }
 }
 
@@ -27,15 +22,7 @@ var domToScript = function (element){
 var accChart = {rookie: 65, squaddie: 70, sergeant: 75}
 var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
 
-//Old redundant constructors.
-// var Human = function(rankh, rankam, id){
-//   new Unit("human", rankh, 3, ranka, 3);
-// }
 
-// var Alien = function(rankh, ranka, id){
-//   new Unit("alien", rankh, 3, ranka, 3);
-//   console.log(this.Unit)
-// }
 
 //creates initial board state.
 
@@ -54,45 +41,26 @@ var boardBuilder = function(){
 }
 boardBuilder();
 
+//dom -> js converter, returns unit object
+var jsConvert = function (id){
+  var index = Number(id.split("_")[1])-1;
+  return units[index];
+
+}
+
+//keeps track of turn, in string form for easier use with dom and js IDs.
+var turnTrack = "alien";
 
 var alienSelector = $(".alien").on('click',function(){
-  alienSelector = $(this).attr('id')
+  var sideCheck = $(this).attr('id')
+  if (sideCheck.split("_")[0]===turnTrack){
+    alienSelector = sideCheck;
+  }
+  else {
+    alert("You can't command the enemy.")
+  }
   console.log(alienSelector)
 })
-
-// var attacker = function(){
-  // for (var i = 0; i < units.length; i++){
-  //   if (units[i].id = alienSelector){
-  //     if (units[i].aim > (Math.random()*100)){
-  //       for (var j = 0; j < units.length; j++){
-  //         if(units[j].id = this)
-  //       }
-  //     }
-  //   }
-  // }
-
-// var attack = function(){
-
-// }
-
-//range checker, to be called when attack is clicked
-var rangeChecker = function(location){
-  var above = $('#'+(location - 1)+"> .alien");
-  if (above.length > 0){
-      above.on('click', domToScript(alienSelector).attacker(above))
-  }
-  var below = $('#'+(location + 1)+"> .alien");
-  var right = $('#'+(location + 10)+"> .alien");
-    if (right.length > 0){
-      right.on('click', domToScript(alienSelector).attacker(right))
-      console.log(right)
-  }
-  var left = $('#'+(location - 10)+"> .alien");
-  var presence = above.length+below.length+left.length+right.length;
-}
-//hit calculator
-
-//damage dealer
 
 
 
@@ -100,10 +68,7 @@ var rangeChecker = function(location){
 $('#attack').on('click', function(){
   var $location = $('#'+alienSelector).parent();
   var $idNum = Number($location.attr('id'))
-  var targets = rangeChecker($idNum);
-  if (targets < 0){
-    alert('no targets in range')
-  }
+  var range = jsConvert(alienSelector).range;
 })
 
 $('#right').on('click',function(){

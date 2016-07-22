@@ -1,0 +1,44 @@
+old code
+//range checker, to be called when attack is clicked
+// var rangeChecker = function(location){
+//   var above = $('#'+(location - 1)+"> .alien");
+//   if (above.length > 0){
+//       above.on('click', domToScript(alienSelector).attacker(above))
+//   }
+//   var below = $('#'+(location + 1)+"> .alien");
+//   var right = $('#'+(location + 10)+"> .alien");
+//     if (right.length > 0){
+//       right.on('click', domToScript(alienSelector).attacker(right))
+//       console.log(right)
+//   }
+//   var left = $('#'+(location - 10)+"> .alien");
+//   var presence = above.length+below.length+left.length+right.length;
+// }
+
+// var attacker = function(){
+  // for (var i = 0; i < units.length; i++){
+  //   if (units[i].id = alienSelector){
+  //     if (units[i].aim > (Math.random()*100)){
+  //       for (var j = 0; j < units.length; j++){
+  //         if(units[j].id = this)
+  //       }
+  //     }
+  //   }
+  // }
+
+//Old redundant constructors.
+// var Human = function(rankh, rankam, id){
+//   new Unit("human", rankh, 3, ranka, 3);
+// }
+
+// var Alien = function(rankh, ranka, id){
+//   new Unit("alien", rankh, 3, ranka, 3);
+//   console.log(this.Unit)
+// }
+
+    // this.attack = function(shooter, target){
+    //   var domID = $(target).attr('id');
+    //   var scriptID = Number((domID.split('_'))[1])-1;
+    //   units[scriptID]['health']-=3;
+    //   console.log(units[scriptID])
+    // }
