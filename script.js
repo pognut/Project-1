@@ -15,6 +15,7 @@ var Unit = function(d, h, s, a, r, id) {
       console.log(toHit);
       if(this.aim > Math.floor((Math.random()*100))){
         victim.health-=3;
+        console.log(victim)
       }
       else{
         alert("Missed!")
@@ -32,9 +33,9 @@ var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
 
 //creates initial board state.
 
-  var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alien_1")
-  var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alien_2")
-  var xone = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "human_1")
+  var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, "alien_1")
+  var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, "alien_2")
+  var xone = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "human_1")
   var units = [[ayyone, ayytwo],[xone]]
 var boardBuilder = function(){
   var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienthree")
@@ -42,8 +43,18 @@ var boardBuilder = function(){
   var xthree = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   $('#11').append('<div class = alien id = '+ayyone.id+'>')
   $('#21').append('<div class = alien id = '+ayytwo.id+'>')
+  $('#31').append('<div class = alien id = '+xone.id+'>')
 }
 boardBuilder();
+
+// var test1 = $('#alien_1').parent().attr('id');
+// var test2 = test1.split("")
+// var test3 = Number(test2[0])+Number(test2[1])
+// console.log(test3)
+// var test4 = $('#alien_2').parent().attr('id');
+// var test5 = test4.split("")
+// var test6 = Number(test5[0])+Number(test5[1])
+// console.log(test6)
 
 //dom -> js converter, returns unit object
 var jsConvert = function (id){
@@ -66,29 +77,48 @@ var enemy = "human";
 
 var unitSelector = $(".alien").on('click',function(){
   var sideCheck = $(this).attr('id');
-  if (sideCheck.split("_")[0]===turnTrack){
-    unitSelector = sideCheck;
+  if (attacking ===false){
+    if (sideCheck.split("_")[0]===turnTrack){
+      unitSelector = sideCheck;
+    }
+    else {
+      alert("You can't command the enemy.")
+    }
   }
-  else {
-    alert("You can't command the enemy.")
+  else{
+
   }
 })
 
+var rangeFinder = function(shooter, victim){
+  var first = $('#'+shooter).parent().attr('id')
+  var firstLoc = Number(first.split('')[0])+Number(first.split('')[1])
+  var second = $(victim).parent().attr('id')
+  var secondLoc = Number(second.split('')[0])+Number(second.split('')[1])
+  return Math.abs(firstLoc - secondLoc);
+}
 
 
 $('#attack').on('click', function(){
+  console.log(unitSelector)
   if (attacking === false){
     attacking = true;
-    var $location = $('#'+unitSelector).parent();
-    var $idNum = Number($location.attr('id'))
     var attacker = jsConvert(unitSelector);
-    var range = jsConvert(unitSelector)
+    var range = attacker.range
     $('.tile').on('click',function(event){
       var $clickTarget = $(event.target);
       if ($clickTarget.hasClass(turnTrack)){
-        var $targId = $clickTarget.attr('id')
-        var target = jsConvert($targId)
-        attacker.attack(target)
+        var rangeCheck = rangeFinder(unitSelector, $clickTarget)
+        console.log(range)
+        console.log(rangeCheck)
+        if(range >= rangeCheck){
+          var $targId = $clickTarget.attr('id')
+          var target = jsConvert($targId)
+          attacker.attack(target)
+        }
+        else{
+          alert('Out of Range')
+        }
       }
       else {
         alert('Invalid target')

@@ -23,3 +23,8 @@
   background-image: url('http://vignette2.wikia.nocookie.net/deadliestfiction/images/7/7d/XCOM_Sectoid.jpg/revision/latest?cb=20130418235005');
   background-position: -100px -100px;
 }
+
+#human_1 {
+  background-image: url('#');
+  background-color: black;
+}
