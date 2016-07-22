@@ -13,7 +13,9 @@ var Unit = function(d, h, s, a, r, m, id) {
     this.actions = m;
     this.attack = function(victim){
       var toHit = Math.random()*100;
-      if(this.aim > Math.floor((Math.random()*100))){
+      console.log(toHit)
+      console.log(this.aim)
+      if(this.aim > toHit){
         victim.health-=3;
         console.log(victim)
         $('.tile').off('click',targetClick);
@@ -45,6 +47,10 @@ var boardBuilder = function(){
   var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienthree")
   var xtwo = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
   var xthree = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
+  for (var i = 1;i <= 6; i++){
+    for (var j = 1; j <= 13;j++)
+      $('.board').append("<div class = 'tile' id = "+String(j)+String(i)+'><div>')
+  }
   $('#11').append("<div class = 'unit alien' id = "+ayyone.id+'>')
   $('#21').append("<div class = 'unit alien' id = "+ayytwo.id+'>')
   $('#31').append("<div class = 'unit human' id = "+xone.id+'>')
@@ -66,12 +72,19 @@ var jsConvert = function (id){
   }
 }
 
-var attacking = false;
-
 //keeps track of turn, in string form for easier use with dom and js IDs.
-var turnTrack = "alien";
+var turnTrack = 'alien';
 var enemy = "human";
+var unitIndex = {"alien": 0, "human": 1}
 
+//sends selected unit info to the dom
+var selectDomInfo = function (selection){
+  var source = jsConvert(selection);
+  $('#health').text('Health: '+this.health);
+
+}
+
+//sends updates to the dom for health and abilities
 
 //selects units if it's your turn.
 var unitSelector = $(".unit").on('click',function(){
@@ -80,6 +93,7 @@ var unitSelector = $(".unit").on('click',function(){
   if (attacking ===false){
     if (sideCheck.split("_")[0]===turnTrack){
       unitSelector = sideCheck;
+      selectDomInfo(unitSelector);
     }
     else {
       alert("You can't command the enemy.")
@@ -90,6 +104,9 @@ var unitSelector = $(".unit").on('click',function(){
   }
 })
 
+
+//determines range between two units in whole numbers, to be compared
+//with unit range property.
 var rangeFinder = function(shooter, victim){
   var first = $('#'+shooter).parent().attr('id')
   var firstLoc = Number(first.split('')[0])+Number(first.split('')[1])
@@ -98,7 +115,7 @@ var rangeFinder = function(shooter, victim){
   return Math.abs(firstLoc - secondLoc);
 }
 
-//handles logic for attacking clicks.
+//handles logic for targeting enemy units.
 var targetClick = function(event){
       var $clickTarget = $(event.target);
       var attacker = jsConvert(unitSelector);
@@ -108,6 +125,14 @@ var targetClick = function(event){
           var $targId = $clickTarget.attr('id')
           var target = jsConvert($targId)
           attacker.attack(target)
+          if(target.health<0){
+            alert('he ded')
+            var enemies = units[unitIndex[enemy]][0].health;
+            if (enemies < 0){
+              console.log("you win")
+            }
+            $clickTarget.remove();
+          }
         }
         else{
           alert('Out of Range')
@@ -117,6 +142,12 @@ var targetClick = function(event){
         alert('Invalid target')
       }
 }
+
+//tracks whether player is attempting to target something
+var attacking = false;
+
+//attack button; sets up state in which clicks determine validity of target,
+//and possibly perform attack method, rather than normal functionality
 
 $('#attack').on('click', function(){
   if(jsConvert(unitSelector).actions>0){
@@ -129,7 +160,6 @@ $('#attack').on('click', function(){
       attacking = false;
       $('.tile').off('click',targetClick);
       // to remove the event listeners if the attack is canceled
-      // $('.tile').removeEventListener(name)
     }
   }
   else{
@@ -137,6 +167,8 @@ $('#attack').on('click', function(){
   }
 })
 
+
+//movement buttons
 $('#right').on('click',function(){
   var $currentLocation = $('#'+unitSelector).parent();
   var $newLocation = Number($currentLocation.attr("id")) + 10;
@@ -197,6 +229,27 @@ $('#down').on('click',function(){
     }
   else{
     alert('Out of Moves')
+  }
+})
+
+
+//turn button, also refreshes movements and resets unit selector
+$('#turn').on('click',function(){
+  unitSelector = null;
+  attacking = false;
+  if(turnTrack==='alien'){
+    turnTrack = 'human';
+    for (var i = 0; i < units[1].length; i++){
+      units[1][i].actions = 2;
+    }
+    enemy = 'alien';
+  }
+  else{
+    turnTrack = 'alien';
+    for (var j = 0; j < units[0].length; j++){
+      units[0][j].actions = 2;
+    }
+    enemy = 'human';
   }
 })
 
