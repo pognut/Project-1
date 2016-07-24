@@ -16,7 +16,7 @@ var Unit = function(d, h, s, a, r, m, id) {
       console.log(toHit)
       console.log(this.aim)
       if(this.aim > toHit){
-        victim.health-=3;
+        victim.health-=2;
         console.log(victim)
         $('.tile').off('click',targetClick);
         jsConvert(unitSelector).actions=0;
@@ -62,10 +62,15 @@ var boardBuilder = function(){
   $('#21').append("<div class = 'unit alien' id = "+ayyone.id+'>')
   $('#'+ayyone.id).append("<div class = health-bar id = "+ayyone.id+'health>')
   $('#23').append("<div class = 'unit alien' id = "+ayytwo.id+'>')
+  $('#'+ayytwo.id).append("<div class = health-bar id = "+ayytwo.id+'health>')
   $('#25').append("<div class = 'unit alien' id = "+ayythree.id+'>')
-  $('#131').append("<div class = 'unit human' id = "+xone.id+'>')
+  $('#'+ayythree.id).append("<div class = health-bar id = "+ayythree.id+'health>')
+  $('#11').append("<div class = 'unit human' id = "+xone.id+'>')
+  $('#'+xone.id).append("<div class = health-bar id = "+xone.id+'health>')
   $('#133').append("<div class = 'unit human' id = "+xtwo.id+'>')
+  $('#'+xtwo.id).append("<div class = health-bar id = "+xtwo.id+'health>')
   $('#135').append("<div class = 'unit human' id = "+xthree.id+'>')
+  $('#'+xthree.id).append("<div class = health-bar id = "+xthree.id+'health>')
 
 }
 boardBuilder();
@@ -106,6 +111,19 @@ var selectDomInfo = function (selection){
     $('#speed').text('Speed: '+source.speed);
     $('#range').text('Range: '+source.range);
     $('#actions').text('Actions: '+source.actions);
+  }
+}
+
+var healthUpdate = function(data, dom){
+
+  var par = dom.attr('id')
+  var bar = $('#'+par+'> .health-bar');
+  if (data.health < 0)
+  {
+    bar.css('background-color', 'black')
+  }
+  else{
+    bar.css('background-color', healthBar[data.health])
   }
 }
 
@@ -163,14 +181,16 @@ var killCheck = function(targetdata, targetdom){
     if (sideCheck == enemy)
     {
       unitCounter[enemy]-=1
-      alert('enemy killed');
+      alert('enemy killed')
+      targetdom.addClass('dead'+enemy);
     }
     else
     {
       unitCounter[turnTrack]-=1
       alert('ally killed')
+      targetdom.addClass('dead'+turnTrack);
     }
-    targetdom.remove();
+
     if(unitCounter[enemy] <=0)
     {
       alert('you win')
@@ -192,6 +212,7 @@ var targetClick = function(event){
           var target = jsConvert($targId)
           attacker.attack(target)
           killCheck(target,$clickTarget)
+          healthUpdate(target, $clickTarget)
         }
         else{
           alert('Out of Range')
@@ -203,7 +224,6 @@ var targetClick = function(event){
 }
 
 var grenadeThrow = function(event){
-  //add if to handle clicking on tile vs unit
   var crossArr = []
   if($(event.target).hasClass('unit')===true)
   {
@@ -233,6 +253,9 @@ var grenadeThrow = function(event){
       killCheck(naded, crossArr[p])
     }
   }
+  attacking = false;
+  $('.tile').off('click',grenadeThrow)
+  jsConvert(unitSelector).actions = 0;
 }
 
 //tracks whether player is attempting to target something
@@ -356,6 +379,7 @@ $('#turn').on('click',function(){
   selectDomInfo()
   if(turnTrack==='alien'){
     turnTrack = 'human';
+    $('#turntracker').text('Turn: Humans')
     for (var i = 0; i < units[1].length; i++){
       units[1][i].actions = 2;
     }
@@ -363,6 +387,7 @@ $('#turn').on('click',function(){
   }
   else{
     turnTrack = 'alien';
+     $('#turntracker').text('Turn: Aliens')
     for (var j = 0; j < units[0].length; j++){
       units[0][j].actions = 2;
     }
