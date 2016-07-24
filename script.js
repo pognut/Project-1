@@ -67,15 +67,15 @@ var boardBuilder = function(){
   $('#'+ayythree.id).append("<div class = health-bar id = "+ayythree.id+'health>')
   $('#11').append("<div class = 'unit human' id = "+xone.id+'>')
   $('#'+xone.id).append("<div class = health-bar id = "+xone.id+'health>')
-  $('#133').append("<div class = 'unit human' id = "+xtwo.id+'>')
+  $('#123').append("<div class = 'unit human' id = "+xtwo.id+'>')
   $('#'+xtwo.id).append("<div class = health-bar id = "+xtwo.id+'health>')
-  $('#135').append("<div class = 'unit human' id = "+xthree.id+'>')
+  $('#125').append("<div class = 'unit human' id = "+xthree.id+'>')
   $('#'+xthree.id).append("<div class = health-bar id = "+xthree.id+'health>')
 
 }
 boardBuilder();
 
-
+//add a bunch of aliens to "balance" game, try to make mind blast work.
 
 //dom -> js converter, returns unit object
 var jsConvert = function (id){
@@ -211,8 +211,18 @@ var targetClick = function(event){
           var $targId = $clickTarget.attr('id')
           var target = jsConvert($targId)
           attacker.attack(target)
+          var bull = $('<img id = bullet src = https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg>')
+          bull.css('top', $('#'+unitSelector).position().top+55)
+          bull.css('left', $('#'+unitSelector).position().left+80)
+          $('.board').append(bull)
+          bull.css('top', $clickTarget.position().top+40)
+          bull.css('left', $clickTarget.position().left+50)
+          setTimeout(function(){
           killCheck(target,$clickTarget)
           healthUpdate(target, $clickTarget)
+          bull.remove();
+          },1000)
+
         }
         else{
           alert('Out of Range')

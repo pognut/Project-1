@@ -88,9 +88,15 @@ button {
 
 }
 
-.gunfire {
+#bullet {
 
+  transition: top 1s, left 1s;
+  transition-timing-function: linear;
+  width: 10px;
+  height: 10px;
+  position:absolute;
 }
+
 
 .health-bar {
   border: solid 1px black;
