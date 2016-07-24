@@ -26,10 +26,16 @@ var Unit = function(d, h, s, a, r, m, id) {
         $('.tile').off('click',targetClick);
         jsConvert(unitSelector).actions=0;
       }
-
     }
   }
 }
+
+// var Rookie = function (){
+//   this.grenade = function(target){
+
+//   }
+
+// }
 
 //to make adjusting stats easier.
 var accChart = {rookie: 65, squaddie: 70, sergeant: 75}
@@ -38,22 +44,29 @@ var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
 
 
 //creates initial board state.
-
   var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_1")
   var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_2")
+  var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_3")
   var xone = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_1")
-  var units = [[ayyone, ayytwo],[xone]]
+  var xtwo = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_2")
+  var xthree = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_3")
+  var units = [[ayyone, ayytwo, ayythree],[xone, xtwo, xthree]]
+
 var boardBuilder = function(){
-  var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 3, "alienthree")
-  var xtwo = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
-  var xthree = Unit("human", healthChart.rookie, 3, accChart.rookie, 3, "humanone")
+
   for (var i = 1;i <= 6; i++){
-    for (var j = 1; j <= 13;j++)
-      $('.board').append("<div class = 'tile' id = "+String(j)+String(i)+'><div>')
+    for (var j = 1; j <= 13;j++){
+      $('.board').append("<div class = 'tile' id = "+String(j)+String(i)+'>')
+    }
   }
-  $('#11').append("<div class = 'unit alien' id = "+ayyone.id+'>')
-  $('#21').append("<div class = 'unit alien' id = "+ayytwo.id+'>')
-  $('#31').append("<div class = 'unit human' id = "+xone.id+'>')
+  $('#21').append("<div class = 'unit alien' id = "+ayyone.id+'>')
+  $(ayyone.id).append("<div class = health-bar id = "+ayyone.id+'health>')
+  $('#23').append("<div class = 'unit alien' id = "+ayytwo.id+'>')
+  $('#25').append("<div class = 'unit alien' id = "+ayythree.id+'>')
+  $('#131').append("<div class = 'unit human' id = "+xone.id+'>')
+  $('#133').append("<div class = 'unit human' id = "+xtwo.id+'>')
+  $('#135').append("<div class = 'unit human' id = "+xthree.id+'>')
+
 }
 boardBuilder();
 
@@ -76,6 +89,7 @@ var jsConvert = function (id){
 var turnTrack = 'alien';
 var enemy = "human";
 var unitIndex = {"alien": 0, "human": 1}
+var unitCounter = {"alien": 2, "human": 1}
 
 //sends selected unit info to the dom
 var selectDomInfo = function (selection){
@@ -119,10 +133,40 @@ var unitSelector = $(".unit").on('click',function(){
 //with unit range property.
 var rangeFinder = function(shooter, victim){
   var first = $('#'+shooter).parent().attr('id')
-  var firstLoc = Number(first.split('')[0])+Number(first.split('')[1])
+  if(first.split('').length==2)
+  {
+    var firstLoc = Number(first.split('')[0])+Number(first.split('')[1])
+  }
+  else
+  {
+    var firstLoc = Number(first.split('')[0]+first.split('')[1])+Number(first.split('')[2])
+  }
+
   var second = $(victim).parent().attr('id')
-  var secondLoc = Number(second.split('')[0])+Number(second.split('')[1])
+  if(second.split('').length==2)
+  {
+    var secondLoc = Number(second.split('')[0])+Number(second.split('')[1])
+  }
+  else
+  {
+    var secondLoc = Number(second.split('')[0]+second.split('')[1])+Number(second.split('')[2])
+  }
+  console.log(firstLoc)
+  console.log(secondLoc)
   return Math.abs(firstLoc - secondLoc);
+}
+
+//handles death checks and win checks
+var killCheck = function(targetdata, targetdom){
+  if(targetdata.health <= 0){
+    alert('enemy killed');
+    unitCounter[enemy]-=1
+    targetdom.remove();
+    if(unitCounter[enemy] <=0)
+    {
+      alert('you win')
+    }
+  }
 }
 
 //handles logic for targeting enemy units.
@@ -131,18 +175,11 @@ var targetClick = function(event){
       var attacker = jsConvert(unitSelector);
       if ($clickTarget.hasClass(enemy)===true){
         var rangeCheck = rangeFinder(unitSelector, $clickTarget)
-        if(range >= rangeCheck){
+        if(attacker.range >= rangeCheck){
           var $targId = $clickTarget.attr('id')
           var target = jsConvert($targId)
           attacker.attack(target)
-          if(target.health<0){
-            alert('he ded')
-            var enemies = units[unitIndex[enemy]][0].health;
-            if (enemies < 0){
-              console.log("you win")
-            }
-            $clickTarget.remove();
-          }
+          killCheck(target,$clickTarget)
         }
         else{
           alert('Out of Range')
@@ -151,6 +188,28 @@ var targetClick = function(event){
       else {
         alert('Invalid target')
       }
+}
+
+var grenadeThrow = function(event){
+  //add if to handle clicking on tile vs unit
+  var $clickTarget = Number($(event.target).attr('id'));
+  var crossArr = []
+  var center = $('#'+($clickTarget+1)+"> .unit");
+  var below = $('#'+($clickTarget+1)+"> .unit");
+  var right = $('#'+($clickTarget + 10)+"> .unit");
+  var above = $('#'+($clickTarget - 1)+"> .unit");
+  var left = $('#'+($clickTarget - 10)+"> .unit");
+  crossArr.push(center, below, right, above, left)
+  console.log(right)
+  console.log(above)
+  for (var p = 0; p < crossArr.length; p++){
+    if(crossArr[p].length === 1){
+      var naded = jsConvert(crossArr[p].attr('id'))
+      naded.health -=3;
+      selectDomInfo(crossArr[p].attr('id'))
+      killCheck(naded, crossArr[p])
+    }
+  }
 }
 
 //tracks whether player is attempting to target something
@@ -177,6 +236,24 @@ $('#attack').on('click', function(){
   }
 })
 
+$('#grenade').on('click', function(){
+  if(jsConvert(unitSelector).actions>0){
+    if (attacking ===false)
+    {
+      attacking = true;
+      $('.tile').on('click',grenadeThrow)
+    }
+    else
+    {
+      $('.tile').off('click',grenadeThrow);
+      // to remove the event listeners if the attack is canceled
+    }
+  }
+  else{
+    alert('Out of actions')
+  }
+
+})
 
 //movement buttons
 $('#right').on('click',function(){
