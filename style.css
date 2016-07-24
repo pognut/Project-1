@@ -20,9 +20,10 @@
 .alien {
   margin: 0px 20px 0px 20px;
   width: 60px;
-  height: 90px;
+  height: 100px;
   background-image: url('http://3.bp.blogspot.com/-X9ixVJA0-w4/VFFdfW1MVHI/AAAAAAAACx8/5BgQNVAJ32c/s1600/xcom%2Bsprites.png');
   background-position: -180px -295px;
+  position: absolute;
 }
 
 .human {
@@ -93,4 +94,9 @@ button {
 
 .health-bar {
   border: solid 1px black;
+  width:95%;
+  height: 10%;
+  margin-top: 150%;
+  position: relative;
+  background-color:green;
 }

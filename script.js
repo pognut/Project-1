@@ -60,7 +60,7 @@ var boardBuilder = function(){
     }
   }
   $('#21').append("<div class = 'unit alien' id = "+ayyone.id+'>')
-  $(ayyone.id).append("<div class = health-bar id = "+ayyone.id+'health>')
+  $('#'+ayyone.id).append("<div class = health-bar id = "+ayyone.id+'health>')
   $('#23').append("<div class = 'unit alien' id = "+ayytwo.id+'>')
   $('#25').append("<div class = 'unit alien' id = "+ayythree.id+'>')
   $('#131').append("<div class = 'unit human' id = "+xone.id+'>')
@@ -89,7 +89,8 @@ var jsConvert = function (id){
 var turnTrack = 'alien';
 var enemy = "human";
 var unitIndex = {"alien": 0, "human": 1}
-var unitCounter = {"alien": 2, "human": 1}
+var unitCounter = {"alien": 3, "human": 3}
+var healthBar = {0: "black", 1: "red", 2: "yellow", 3: "green"}
 
 //sends selected unit info to the dom
 var selectDomInfo = function (selection){
@@ -124,7 +125,6 @@ var unitSelector = $(".unit").on('click',function(){
     }
   }
   else{
-
   }
 })
 
@@ -159,12 +159,24 @@ var rangeFinder = function(shooter, victim){
 //handles death checks and win checks
 var killCheck = function(targetdata, targetdom){
   if(targetdata.health <= 0){
-    alert('enemy killed');
-    unitCounter[enemy]-=1
+    var sideCheck = targetdom.attr('id').split('_')[0]
+    if (sideCheck == enemy)
+    {
+      unitCounter[enemy]-=1
+      alert('enemy killed');
+    }
+    else
+    {
+      unitCounter[turnTrack]-=1
+      alert('ally killed')
+    }
     targetdom.remove();
     if(unitCounter[enemy] <=0)
     {
       alert('you win')
+    }
+    if(unitCounter[turnTrack] <=0){
+      alert('you blew your last soldier up')
     }
   }
 }
@@ -192,9 +204,19 @@ var targetClick = function(event){
 
 var grenadeThrow = function(event){
   //add if to handle clicking on tile vs unit
-  var $clickTarget = Number($(event.target).attr('id'));
   var crossArr = []
-  var center = $('#'+($clickTarget+1)+"> .unit");
+  if($(event.target).hasClass('unit')===true)
+  {
+    var $child = $(event.target).parent()
+    var $clickTarget = Number($child.attr('id'));
+    console.log($clickTarget)
+  }
+  else
+  {
+    var $clickTarget = Number($(event.target).attr('id'));
+    console.log($clickTarget)
+  }
+  var center = $('#'+($clickTarget)+"> .unit");
   var below = $('#'+($clickTarget+1)+"> .unit");
   var right = $('#'+($clickTarget + 10)+"> .unit");
   var above = $('#'+($clickTarget - 1)+"> .unit");
@@ -205,8 +227,9 @@ var grenadeThrow = function(event){
   for (var p = 0; p < crossArr.length; p++){
     if(crossArr[p].length === 1){
       var naded = jsConvert(crossArr[p].attr('id'))
-      naded.health -=3;
+      naded.health -=1;
       selectDomInfo(crossArr[p].attr('id'))
+
       killCheck(naded, crossArr[p])
     }
   }
