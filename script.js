@@ -40,17 +40,17 @@ var Unit = function(d, h, s, a, r, m, id) {
 
 //to make adjusting stats easier.
 var accChart = {rookie: 65, squaddie: 70, sergeant: 75}
-var healthChart = {rookie: 5, sectoid:2}
+var healthChart = {rookie: 5, sectoid:3}
 
 
 //This really should be automated. If I had more time...
 //creates initial board state.
-  var ayyone = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_1")
-  var ayytwo = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_2")
-  var ayythree = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_3")
-  var ayyfour = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_4")
-  var ayyfive = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_5")
-  var ayysix = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_6")
+  var ayyone = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 3, 2, "alien_1")
+  var ayytwo = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 3, 2, "alien_2")
+  var ayythree = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 3, 2, "alien_3")
+  var ayyfour = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 3, 2, "alien_4")
+  var ayyfive = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 3, 2, "alien_5")
+  var ayysix = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 3, 2, "alien_6")
   var xone = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_1")
   var xtwo = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_2")
   var xthree = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_3")
