@@ -16,8 +16,7 @@ var Unit = function(d, h, s, a, r, m, id) {
       console.log(toHit)
       console.log(this.aim)
       if(this.aim > toHit){
-        victim.health-=2;
-        console.log(victim)
+        victim.health-=(Math.floor(Math.random() * (3 - 1 + 1)) + 1);
         $('.tile').off('click',targetClick);
         jsConvert(unitSelector).actions=0;
       }
@@ -39,18 +38,21 @@ var Unit = function(d, h, s, a, r, m, id) {
 
 //to make adjusting stats easier.
 var accChart = {rookie: 65, squaddie: 70, sergeant: 75}
-var healthChart = {rookie: 1, squaddie: 2, sergeant: 3}
+var healthChart = {rookie: 5, sectoid:2}
 
 
-
+//This really should be automated. If I had more time...
 //creates initial board state.
-  var ayyone = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_1")
-  var ayytwo = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_2")
-  var ayythree = new Unit("alien", healthChart.rookie, 3, accChart.rookie, 1, 2, "alien_3")
+  var ayyone = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_1")
+  var ayytwo = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_2")
+  var ayythree = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_3")
+  var ayyfour = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_4")
+  var ayyfive = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_5")
+  var ayysix = new Unit("alien", healthChart.sectoid, 3, accChart.rookie, 2, 2, "alien_6")
   var xone = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_1")
   var xtwo = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_2")
   var xthree = new Unit("human", healthChart.rookie, 3, accChart.rookie, 3, 2, "human_3")
-  var units = [[ayyone, ayytwo, ayythree],[xone, xtwo, xthree]]
+  var units = [[ayyone, ayytwo, ayythree, ayyfour, ayyfive, ayysix],[xone, xtwo, xthree]]
 
 var boardBuilder = function(){
 
@@ -65,12 +67,18 @@ var boardBuilder = function(){
   $('#'+ayytwo.id).append("<div class = health-bar id = "+ayytwo.id+'health>')
   $('#25').append("<div class = 'unit alien' id = "+ayythree.id+'>')
   $('#'+ayythree.id).append("<div class = health-bar id = "+ayythree.id+'health>')
-  $('#11').append("<div class = 'unit human' id = "+xone.id+'>')
+  $('#121').append("<div class = 'unit human grenade' id = "+xone.id+'>')
   $('#'+xone.id).append("<div class = health-bar id = "+xone.id+'health>')
-  $('#123').append("<div class = 'unit human' id = "+xtwo.id+'>')
+  $('#123').append("<div class = 'unit human grenade' id = "+xtwo.id+'>')
   $('#'+xtwo.id).append("<div class = health-bar id = "+xtwo.id+'health>')
-  $('#125').append("<div class = 'unit human' id = "+xthree.id+'>')
+  $('#125').append("<div class = 'unit human grenade' id = "+xthree.id+'>')
   $('#'+xthree.id).append("<div class = health-bar id = "+xthree.id+'health>')
+  $('#12').append("<div class = 'unit alien' id = "+ayyfour.id+'>')
+  $('#'+ayyfour.id).append("<div class = health-bar id = "+ayyfour.id+'health>')
+  $('#14').append("<div class = 'unit alien' id = "+ayyfive.id+'>')
+  $('#'+ayyfive.id).append("<div class = health-bar id = "+ayyfive.id+'health>')
+  $('#16').append("<div class = 'unit alien' id = "+ayysix.id+'>')
+  $('#'+ayysix.id).append("<div class = health-bar id = "+ayysix.id+'health>')
 
 }
 boardBuilder();
@@ -132,9 +140,11 @@ var healthUpdate = function(data, dom){
 //selects units if it's your turn.
 var unitSelector = $(".unit").on('click',function(){
   var sideCheck = $(this).attr('id');
+  $('.unit').removeClass('selector')
   //prevents selecting own units while attacking.
-  if (attacking ===false){
+  if (attacking ===false&&grenading===false){
     if (sideCheck.split("_")[0]===turnTrack){
+      $(this).addClass('selector')
       unitSelector = sideCheck;
       selectDomInfo(unitSelector);
     }
@@ -266,10 +276,12 @@ var grenadeThrow = function(event){
   attacking = false;
   $('.tile').off('click',grenadeThrow)
   jsConvert(unitSelector).actions = 0;
+  unitSelector.removeClass('grenade')
 }
 
 //tracks whether player is attempting to target something
 var attacking = false;
+var grenading = false;
 
 //attack button; sets up state in which clicks determine validity of target,
 //and possibly perform attack method, rather than normal functionality
@@ -293,16 +305,15 @@ $('#attack').on('click', function(){
 })
 
 $('#grenade').on('click', function(){
-  if(jsConvert(unitSelector).actions>0){
-    if (attacking ===false)
+  if(jsConvert(unitSelector).actions>0&&unitSelector.hasClass('grenade')){
+    if (grenading ===false)
     {
-      attacking = true;
+      grenading = true;
       $('.tile').on('click',grenadeThrow)
     }
     else
     {
       $('.tile').off('click',grenadeThrow);
-      // to remove the event listeners if the attack is canceled
     }
   }
   else{
@@ -385,6 +396,7 @@ $('#down').on('click',function(){
 $('#turn').on('click',function(){
   unitSelector = null;
   attacking = false;
+  $('.unit').removeClass('selector')
   var resetter = {}
   selectDomInfo()
   if(turnTrack==='alien'){

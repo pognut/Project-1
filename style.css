@@ -77,11 +77,21 @@ button {
 }
 
 .deadalien {
-  background-image:url('https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg');
+  margin: 0px 20px 0px 20px;
+  width: 60px;
+  height: 100px;
+  position: absolute;
+  background-image:url('60901 copy.png');
+  background-position: -20px;
 }
 
 .deadhuman {
-  background-image:url('https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg');
+  background-image:url('60955 copy.png');
+  margin: 0px 20px 0px 20px;
+  width: 60px;
+  height: 100px;
+  position: absolute;
+
 }
 
 .plasma{
@@ -97,12 +107,30 @@ button {
   position:absolute;
 }
 
+.grenade {
+  border-right: 5px solid grey;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
 
-.health-bar {
+.human .health-bar {
   border: solid 1px black;
-  width:95%;
-  height: 10%;
+  width:96%;
+  height: 9%;
   margin-top: 150%;
   position: relative;
   background-color:green;
+}
+
+.alien .health-bar {
+  border: solid 1px black;
+  width:96%;
+  height: 9%;
+  margin-top: 150%;
+  position: relative;
+  background-color: yellow;
+}
+
+.selector{
+  border-left: solid 3px red;
 }
