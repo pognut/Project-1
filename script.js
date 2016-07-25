@@ -19,11 +19,13 @@ var Unit = function(d, h, s, a, r, m, id) {
         victim.health-=(Math.floor(Math.random() * (3 - 1 + 1)) + 1);
         $('.tile').off('click',targetClick);
         jsConvert(unitSelector).actions=0;
+        attacking = false;
       }
       else{
         alert("Missed!")
         $('.tile').off('click',targetClick);
         jsConvert(unitSelector).actions=0;
+        attacking = false;
       }
     }
   }
@@ -102,7 +104,7 @@ var jsConvert = function (id){
 var turnTrack = 'alien';
 var enemy = "human";
 var unitIndex = {"alien": 0, "human": 1}
-var unitCounter = {"alien": 3, "human": 3}
+var unitCounter = {"alien": 6, "human": 3}
 var healthBar = {0: "black", 1: "red", 2: "orange", 3: "yellow", 4: 'green', 5: 'blue'}
 
 //sends selected unit info to the dom
@@ -205,9 +207,6 @@ var killCheck = function(targetdata, targetdom){
     {
       alert('you win')
     }
-    if(unitCounter[turnTrack] <=0){
-      alert('you blew your last soldier up')
-    }
   }
 }
 
@@ -273,12 +272,11 @@ var grenadeThrow = function(event){
       if(crossArr[p].length === 1){
         var naded = jsConvert(crossArr[p].attr('id'))
         naded.health -=1;
-        selectDomInfo(crossArr[p].attr('id'))
-
+        healthUpdate(naded, crossArr[p])
         killCheck(naded, crossArr[p])
       }
     }
-    attacking = false;
+    grenading = false;
     $('.tile').off('click',grenadeThrow)
     jsConvert(unitSelector).actions = 0;
     $('#'+unitSelector).removeClass('grenade')
