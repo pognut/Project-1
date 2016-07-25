@@ -10,6 +10,7 @@
 }
 
 .board {
+  margin: 0 auto;
   width: 1400px;
   height: 615px;
   background-image: url('http://i1.treklens.com/photos/22267/pazmandi_foldek.jpg');
@@ -119,7 +120,7 @@ button {
   height: 9%;
   margin-top: 150%;
   position: relative;
-  background-color:green;
+  background-color:blue;
 }
 
 .alien .health-bar {
@@ -133,4 +134,21 @@ button {
 
 .selector{
   border-left: solid 3px red;
+}
+
+#title{
+  text-align: center;
+  color: red;
+}
+
+body {
+  background-image:url('http://static.gamespot.com/uploads/original/1449/14499318/2356324-1150206898-bg-in.jpg');
+}
+
+button {
+  color: red;
+}
+
+h4 {
+  color: red;
 }

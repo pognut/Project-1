@@ -82,7 +82,7 @@ var boardBuilder = function(){
 
 }
 boardBuilder();
-
+$('#grenade').hide();
 //add a bunch of aliens to "balance" game, try to make mind blast work.
 
 //dom -> js converter, returns unit object
@@ -103,7 +103,7 @@ var turnTrack = 'alien';
 var enemy = "human";
 var unitIndex = {"alien": 0, "human": 1}
 var unitCounter = {"alien": 3, "human": 3}
-var healthBar = {0: "black", 1: "red", 2: "yellow", 3: "green"}
+var healthBar = {0: "black", 1: "red", 2: "orange", 3: "yellow", 4: 'green', 5: 'blue'}
 
 //sends selected unit info to the dom
 var selectDomInfo = function (selection){
@@ -170,7 +170,7 @@ var rangeFinder = function(shooter, victim){
     var firstLoc = Number(first.split('')[0]+first.split('')[1])+Number(first.split('')[2])
   }
 
-  var second = $(victim).parent().attr('id')
+  var second = $(victim).attr('id')
   if(second.split('').length==2)
   {
     var secondLoc = Number(second.split('')[0])+Number(second.split('')[1])
@@ -216,7 +216,8 @@ var targetClick = function(event){
       var $clickTarget = $(event.target);
       var attacker = jsConvert(unitSelector);
       if ($clickTarget.hasClass(enemy)===true){
-        var rangeCheck = rangeFinder(unitSelector, $clickTarget)
+        var $clickParent = $clickTarget.parent();
+        var rangeCheck = rangeFinder(unitSelector, $clickParent)
         if(attacker.range >= rangeCheck){
           var $targId = $clickTarget.attr('id')
           var target = jsConvert($targId)
@@ -253,30 +254,38 @@ var grenadeThrow = function(event){
   }
   else
   {
+    var $child = $(event.target)
     var $clickTarget = Number($(event.target).attr('id'));
     console.log($clickTarget)
   }
-  var center = $('#'+($clickTarget)+"> .unit");
-  var below = $('#'+($clickTarget+1)+"> .unit");
-  var right = $('#'+($clickTarget + 10)+"> .unit");
-  var above = $('#'+($clickTarget - 1)+"> .unit");
-  var left = $('#'+($clickTarget - 10)+"> .unit");
-  crossArr.push(center, below, right, above, left)
-  console.log(right)
-  console.log(above)
-  for (var p = 0; p < crossArr.length; p++){
-    if(crossArr[p].length === 1){
-      var naded = jsConvert(crossArr[p].attr('id'))
-      naded.health -=1;
-      selectDomInfo(crossArr[p].attr('id'))
+  console.log('work')
+  if(rangeFinder(unitSelector, $child)<=3)
+  {
+    var center = $('#'+($clickTarget)+"> .unit");
+    var below = $('#'+($clickTarget+1)+"> .unit");
+    var right = $('#'+($clickTarget + 10)+"> .unit");
+    var above = $('#'+($clickTarget - 1)+"> .unit");
+    var left = $('#'+($clickTarget - 10)+"> .unit");
+    crossArr.push(center, below, right, above, left)
+    console.log(right)
+    console.log(above)
+    for (var p = 0; p < crossArr.length; p++){
+      if(crossArr[p].length === 1){
+        var naded = jsConvert(crossArr[p].attr('id'))
+        naded.health -=1;
+        selectDomInfo(crossArr[p].attr('id'))
 
-      killCheck(naded, crossArr[p])
+        killCheck(naded, crossArr[p])
+      }
     }
+    attacking = false;
+    $('.tile').off('click',grenadeThrow)
+    jsConvert(unitSelector).actions = 0;
+    $('#'+unitSelector).removeClass('grenade')
   }
-  attacking = false;
-  $('.tile').off('click',grenadeThrow)
-  jsConvert(unitSelector).actions = 0;
-  unitSelector.removeClass('grenade')
+  else{
+    alert('Out of Range')
+  }
 }
 
 //tracks whether player is attempting to target something
@@ -305,7 +314,7 @@ $('#attack').on('click', function(){
 })
 
 $('#grenade').on('click', function(){
-  if(jsConvert(unitSelector).actions>0&&unitSelector.hasClass('grenade')){
+  if(jsConvert(unitSelector).actions>0 && $('#'+unitSelector).hasClass('grenade')===true){
     if (grenading ===false)
     {
       grenading = true;
@@ -317,7 +326,7 @@ $('#grenade').on('click', function(){
     }
   }
   else{
-    alert('Out of actions')
+    alert('Out of actions/grenades')
   }
 
 })
@@ -401,6 +410,7 @@ $('#turn').on('click',function(){
   selectDomInfo()
   if(turnTrack==='alien'){
     turnTrack = 'human';
+    $('#grenade').show();
     $('#turntracker').text('Turn: Humans')
     for (var i = 0; i < units[1].length; i++){
       units[1][i].actions = 2;
@@ -413,6 +423,7 @@ $('#turn').on('click',function(){
     for (var j = 0; j < units[0].length; j++){
       units[0][j].actions = 2;
     }
+    $('#grenade').hide()
     enemy = 'human';
   }
 })
