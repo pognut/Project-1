@@ -37,7 +37,7 @@
 }
 
 .command-bar {
-  height: 250px;
+  height: 200px;
   border:1px solid black;
   width: 1300px;
   position:absolute;
@@ -53,7 +53,7 @@
 }
 
 h4 {
-  line-height: 10px;
+  line-height: 5px;
 }
 
 .commands {
